@@ -112,7 +112,7 @@ def image_to_data(image, rotation=0):
     # Keith (https://www.blogger.com/profile/02555547344016007163)
     pb = np.rot90(np.array(image.convert('RGB')), rotation // 90).astype('uint16')
     # Bugfix Issue #22 - Not displaying propery colors irrespective on invert value for the display.
-    # On a raspberry pi with Adafruit ST7735R, the byte ordering of elements in the array is reversed.  
+    # On a raspberry pi with Adafruit ST7735R, the byte ordering of elements in the array is reversed.
     # Color elements are as follows:
     # Red is in element 2, Green is in element 1, and Blue is in element 0.
     color = ((pb[:, :, 2] & 0xF8) << 8) | ((pb[:, :, 1] & 0xFC) << 3) | (pb[:, :, 0] >> 3)
