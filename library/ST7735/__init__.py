@@ -111,7 +111,7 @@ def image_to_data(image, rotation=0):
     # NumPy is much faster at doing this. NumPy code provided by:
     # Keith (https://www.blogger.com/profile/02555547344016007163)
     pb = np.rot90(np.array(image.convert('RGB')), rotation // 90).astype('uint16')
-    color = ((pb[:, :, 0] & 0xF8) << 8) | ((pb[:, :, 1] & 0xFC) << 2) | (pb[:, :, 0] >> 3)
+    color = ((pb[:, :, 0] & 0xF8) << 8) | ((pb[:, :, 1] & 0xFC) << 2) | (pb[:, :, 2] >> 3)
     return np.dstack(((color >> 8) & 0xFF, color & 0xFF)).flatten().tolist()
 
 
