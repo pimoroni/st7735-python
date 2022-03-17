@@ -111,11 +111,7 @@ def image_to_data(image, rotation=0):
     # NumPy is much faster at doing this. NumPy code provided by:
     # Keith (https://www.blogger.com/profile/02555547344016007163)
     pb = np.rot90(np.array(image.convert('RGB')), rotation // 90).astype('uint16')
-    # Bugfix Issue #22 - Not displaying propery colors irrespective on invert value for the display.
-    # On a raspberry pi with Adafruit ST7735R, the byte ordering of elements in the array is reversed.
-    # Color elements are as follows:
-    # Red is in element 2, Green is in element 1, and Blue is in element 0.
-    color = ((pb[:, :, 2] & 0xF8) << 8) | ((pb[:, :, 1] & 0xFC) << 3) | (pb[:, :, 0] >> 3)
+    color = ((pb[:, :, 0] & 0xF8) << 8) | ((pb[:, :, 1] & 0xFC) << 2) | (pb[:, :, 0] >> 3)
     return np.dstack(((color >> 8) & 0xFF, color & 0xFF)).flatten().tolist()
 
 
@@ -123,7 +119,7 @@ class ST7735(object):
     """Representation of an ST7735 TFT LCD."""
 
     def __init__(self, port, cs, dc, backlight=None, rst=None, width=ST7735_TFTWIDTH,
-                 height=ST7735_TFTHEIGHT, rotation=90, offset_left=None, offset_top=None, invert=True, spi_speed_hz=4000000):
+                 height=ST7735_TFTHEIGHT, rotation=90, offset_left=None, offset_top=None, invert=True, bgr=True, spi_speed_hz=4000000):
         """Create an instance of the display using SPI communication.
 
         Must provide the GPIO pin number for the D/C pin and the SPI driver.
@@ -140,6 +136,7 @@ class ST7735(object):
         :param offset_left: COL offset in ST7735 memory
         :param offset_top: ROW offset in ST7735 memory
         :param invert: Invert display
+        :param bgr: MADCTL RGB bit on display set to 1 if True (default) or 0 if False (needed for Adafruit 358 ST7735R Green Tab https://www.adafruit.com/product/358)
         :param spi_speed_hz: SPI speed (in Hz)
 
         """
@@ -158,6 +155,7 @@ class ST7735(object):
         self._height = height
         self._rotation = rotation
         self._invert = invert
+        self._bgr = bgr
 
         # Default left offset to center display
         if offset_left is None:
@@ -289,7 +287,10 @@ class ST7735(object):
             self.command(ST7735_INVOFF)  # Don't invert display
 
         self.command(ST7735_MADCTL)     # Memory access control (directions)
-        self.data(0xC8)                 # row addr/col addr, bottom to top refresh
+        if self._bgr:
+            self.data(0xC8)             # row addr/col addr, bottom to top refresh; Set D3 RGB Bit to 1 for format BGR
+        else:
+            self.data(0xC0)             # row addr/col addr, bottom to top refresh; Set D3 RGB Bit to 0 for format RGB
 
         self.command(ST7735_COLMOD)     # set color mode
         self.data(0x05)                 # 16-bit color
