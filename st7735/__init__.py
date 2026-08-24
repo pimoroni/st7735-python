@@ -20,6 +20,7 @@
 # THE SOFTWARE.
 import numbers
 import time
+from importlib.metadata import PackageNotFoundError, version
 
 import gpiod
 import gpiodevice
@@ -27,7 +28,10 @@ import numpy as np
 import spidev
 from gpiod.line import Direction, Value
 
-__version__ = '1.0.0'
+try:
+    __version__ = version("st7735")
+except PackageNotFoundError:
+    __version__ = "0.0.0"
 
 OUTL = gpiod.LineSettings(direction=Direction.OUTPUT, output_value=Value.INACTIVE)
 
