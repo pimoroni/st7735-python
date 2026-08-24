@@ -122,7 +122,7 @@ def image_to_data(image, rotation=0):
     return np.dstack(((color >> 8) & 0xFF, color & 0xFF)).flatten().tolist()
 
 
-class ST7735(object):
+class ST7735:
     """Representation of an ST7735 TFT LCD."""
 
     def __init__(self, port, cs, dc, backlight=None, rst=None, width=ST7735_TFTWIDTH,
@@ -376,7 +376,6 @@ class ST7735(object):
         Deprecated. Included in __init__.
 
         """
-        pass
 
     def set_window(self, x0=0, y0=0, x1=None, y1=None):
         """Set the pixel address window for proceeding drawing commands. x0 and
