@@ -1,4 +1,4 @@
-import mock
+from unittest import mock
 
 
 def test_setup(gpiodevice, gpiod, spidev, numpy, st7735):

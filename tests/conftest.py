@@ -3,8 +3,8 @@ These allow the mocking of various Python modules
 that might otherwise have runtime side-effects.
 """
 import sys
+from unittest import mock
 
-import mock
 import pytest
 
 
